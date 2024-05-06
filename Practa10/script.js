@@ -1,34 +1,42 @@
-let componentList = [];
+// Объект для управления модальным окном
+const addModal = new bootstrap.Modal('#addModal');
 
+// Функция для отображения модального окна и формы
 function showAddForm() {
-    const form = document.getElementById('component-form');
-    form.innerHTML = `
-    <label for="component-type">Тип компонента:</label>
-    <select id="component-type">
-      <option value="processor">Процессор</option>
-      <option value="ram">Оперативная память</option>
-      <option value="harddrive">Жесткий диск</option>
-    </select>
-    <div id="processor-fields" style="display: none;">
-      <label for="processor-name">Название процессора:</label>
-      <input type="text" id="processor-name">
-      <label for="processor-cores">Количество ядер:</label>
-      <input type="number" id="processor-cores">
-    </div>
-    <div id="ram-fields" style="display: none;">
-      <label for="ram-capacity">Объем памяти:</label>
-      <input type="number" id="ram-capacity">
-      <label for="ram-frequency">Частота:</label>
-      <input type="number" id="ram-frequency">
-    </div>
-    <div id="harddrive-fields" style="display: none;">
-      <label for="harddrive-capacity">Объем диска:</label>
-      <input type="number" id="harddrive-capacity">
-      <label for="harddrive-type">Тип диска:</label>
-      <input type="text" id="harddrive-type">
-    </div>
-    <button type="submit">Добавить</button>
-  `;
+    const modalBody = document.querySelector('#addModal .modal-body');
+    modalBody.innerHTML = `
+        <form id="component-form">
+            <div class="form-group">
+                <label for="component-type">Тип компонента:</label>
+                <select class="form-control" id="component-type">
+                    <option value="processor">Процессор</option>
+                    <option value="ram">Оперативная память</option>
+                    <option value="harddrive">Жесткий диск</option>
+                </select>
+            </div>
+            <div id="processor-fields" class="form-group" style="display: none;">
+                <label for="processor-name">Название процессора:</label>
+                <input type="text" class="form-control" id="processor-name">
+                <label for="processor-cores">Количество ядер:</label>
+                <input type="number" class="form-control" id="processor-cores">
+            </div>
+            <div id="ram-fields" class="form-group" style="display: none;">
+                <label for="ram-capacity">Объем памяти:</label>
+                <input type="number" class="form-control" id="ram-capacity">
+                <label for="ram-frequency">Частота:</label>
+                <input type="number" class="form-control" id="ram-frequency">
+            </div>
+            <div id="harddrive-fields" class="form-group" style="display: none;">
+                <label for="harddrive-capacity">Объем диска:</label>
+                <input type="number" class="form-control" id="harddrive-capacity">
+                <label for="harddrive-type">Тип диска:</label>
+                <input type="text" class="form-control" id="harddrive-type">
+            </div>
+        </form>
+    `;
+
+    // Объект для управления формой
+    const form = new bootstrap.Form(document.getElementById('component-form'));
 
     const componentTypeSelect = document.getElementById('component-type');
     const processorFields = document.getElementById('processor-fields');
@@ -58,6 +66,7 @@ function showAddForm() {
                 break;
             case 'ram':
                 const ramCapacity = document.getElementById('ram-capacity').value;
+
                 const ramFrequency = document.getElementById('ram-frequency').value;
                 component.capacity = ramCapacity;
                 component.frequency = ramFrequency;
@@ -72,48 +81,11 @@ function showAddForm() {
 
         componentList.push(component);
         renderComponentList();
-        form.reset();
+        addModal.hide(); // Скрываем модальное окно после добавления компонента
     });
 
-    const firstInput = form.querySelector('input, textarea');
-    if (firstInput) {
-        firstInput.focus();
-    }
+    addModal.show(); // Отображаем модальное окно
 }
 
-function renderComponentList() {
-    const componentListElement = document.getElementById('component-list');
-    componentListElement.innerHTML = '';
-
-    componentList.forEach((component, index) => {
-        const listItem = document.createElement('li');
-        listItem.classList.add('component-item');
-
-        let componentDetails;
-        switch (component.type) {
-            case 'processor':
-
-                componentDetails = `Процессор: ${component.name}, ${component.cores} ядер`;
-                break;
-            case 'ram':
-                componentDetails = `Оперативная память: ${component.capacity} ГБ, ${component.frequency} МГц`;
-                break;
-            case 'harddrive':
-                componentDetails = `Жесткий диск: ${component.capacity} ГБ, ${component.type}`;
-                break;
-        }
-
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Удалить';
-        removeButton.addEventListener('click', () => {
-            componentList.splice(index, 1);
-            renderComponentList();
-        });
-
-        listItem.textContent = componentDetails;
-        listItem.appendChild(removeButton);
-        componentListElement.appendChild(listItem);
-    });
-}
-
-document.getElementById('add-component-btn').addEventListener('click', showAddForm);
+// Обработчик события для кнопки "Добавить компонент"
+document.querySelector('#addModal .btn-primary').addEventListener('click', showAddForm);
